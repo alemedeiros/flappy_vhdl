@@ -7,7 +7,6 @@
 library ieee ;
 use ieee.std_logic_1164.all ;
 
-
 package colision is
 	-- Check for colision between first obstacle with player.
 	component colision_detection
@@ -22,4 +21,3 @@ package colision is
 			 ) ;
 	end component ;
 end colision ;
-

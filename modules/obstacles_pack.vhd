@@ -39,7 +39,7 @@ package obstacles is
 			 ) ;
 	end component ;
 
-	-- random number module.
+	-- Random number module.
 	component generate_random
 		port (
 				 rand   : out std_logic_vector(7 downto 0) ;
