@@ -1,4 +1,4 @@
--- file: colision/colision_pack.vhd
+-- file: modules/colision_pack.vhd
 -- authors: Alexandre Medeiros and Gabriel Lopes
 --
 -- A Flappy bird implementation in VHDL for a Digital Circuits course at

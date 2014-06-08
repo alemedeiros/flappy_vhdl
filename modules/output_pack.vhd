@@ -1,4 +1,4 @@
--- file: output/output_pack.vhd
+-- file: modules/output_pack.vhd
 -- authors: Alexandre Medeiros and Gabriel Lopes
 --
 -- A Flappy bird implementation in VHDL for a Digital Circuits course at

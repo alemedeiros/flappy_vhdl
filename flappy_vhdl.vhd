@@ -11,6 +11,14 @@
 library ieee ;
 use ieee.std_logic_1164.all ;
 
+library modules ;
+use modules.colision.all ;
+use modules.control.all ;
+use modules.input.all ;
+use modules.obstacles.all ;
+use modules.output.all ;
+use modules.player.all ;
+
 entity flappy_vhdl is
 	port (
 			 -- Input keys
