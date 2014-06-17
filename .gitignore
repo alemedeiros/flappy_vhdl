@@ -1,0 +1,7 @@
+*.swp
+db/
+flappy_vhdl.qpf
+flappy_vhdl.qsf
+flappy_vhdl.qsf.bak
+incremental_db/
+output_files/
