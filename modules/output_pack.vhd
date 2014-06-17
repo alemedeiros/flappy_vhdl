@@ -22,6 +22,21 @@ package output is
 			 ) ;
 	end component ;
 
+	component pixel_counter
+		generic (
+					NUM_HORZ_PIXELS : natural := 128 ;
+					NUM_VERT_PIXELS : natural := 96
+				) ;
+		port (
+				 lin : out integer range 0 to NUM_VERT_PIXELS - 1 ;
+				 col : out integer range 0 to NUM_HORZ_PIXELS - 1 ;
+
+				 clock  : in std_logic ;
+				 reset  : in std_logic ;
+				 enable : in std_logic
+			 ) ;
+	end component ;
+
 	-- Leds and 7seg display controller -- converts internal signals to led
 	-- outputs.
 	component ledcon
