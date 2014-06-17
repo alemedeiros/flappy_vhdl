@@ -16,6 +16,7 @@ package input is
 				 sw       : in  std_logic_vector(9 downto 0) ;
 				 jump     : out std_logic ;
 				 reset    : out std_logic ;
+				 pause    : out std_logic ;
 				 gravity  : out std_logic_vector(7 downto 0)
 			 ) ;
 	end component ;
