@@ -12,13 +12,24 @@ package output is
 	-- obstacles) using vgacon.
 	component draw_frame
 		port (
-				 position   : in  std_logic_vector(7 downto 0) ;
-				 obst_low   : in  std_logic_vector(7 downto 0) ;
-				 obst_high  : in  std_logic_vector(7 downto 0) ;
-				 obst_id    : out std_logic_vector(2 downto 0) ;
-				 clock      : in  std_logic ;
-				 enable     : in  std_logic ;
-				 reset      : in  std_logic
+				 -- Input data
+				 player    : in  integer range 0 to 95 ;
+				 obst_low  : in  integer range 0 to 95 ;
+				 obst_high : in  integer range 0 to 95 ;
+				 obst_pos  : in  integer range 0 to 127 ;
+				 obst_id   : out integer range 0 to 3 ;
+
+				 -- VGA output
+				 red   : out std_logic_vector(3 downto 0) ;
+				 green : out std_logic_vector(3 downto 0) ;
+				 blue  : out std_logic_vector(3 downto 0) ;
+				 hsync : out std_logic ;
+				 vsync : out std_logic ;
+
+				 -- Control signals
+				 clock  : in  std_logic ;
+				 enable : in  std_logic ;
+				 reset  : in  std_logic
 			 ) ;
 	end component ;
 
@@ -34,6 +45,24 @@ package output is
 				 clock  : in std_logic ;
 				 reset  : in std_logic ;
 				 enable : in std_logic
+			 ) ;
+	end component ;
+
+	-- Generate a frame from the current game state.
+	component frame_builder
+		port (
+				 -- Game state data.
+				 player    : in  integer range 0 to 95 ;
+				 obst_low  : in  integer range 0 to 95 ;
+				 obst_high : in  integer range 0 to 95 ;
+				 obst_pos  : in  integer range 0 to 127 ;
+				 obst_id   : out integer range 0 to 3 ;
+
+				 lin : in  integer range 0 to 95 ;
+				 col : in  integer range 0 to 127 ;
+
+				 colour    : out std_logic_vector(2 downto 0) ;
+				 wren      : out std_logic
 			 ) ;
 	end component ;
 
