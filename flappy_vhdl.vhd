@@ -51,7 +51,26 @@ architecture behavior of flappy_vhdl is
 	signal id   : integer range 0 to 3 ;
 	signal low  : integer range 0 to 95 ;
 	signal high : integer range 0 to 95 ;
+
+	signal n_low  : integer range 0 to 95 ;
+	signal n_high : integer range 0 to 95 ;
 begin
+	regbank: obst_regbank
+	port map (
+				 in_low  => n_low,
+				 in_high => n_high,
+				 up_clk  => timer,
+
+				 id      => id,
+				 low     => low,
+				 high    => high,
+				 pos     => pos,
+
+				 clock   => clock_27,
+				 enable  => '1',
+				 reset   => not key(2)
+			 ) ;
+
 	output: draw_frame
 	port map (
 				 player     => play,
@@ -76,23 +95,12 @@ begin
 		if rising_edge(clock_27) then
 			count := count + 1 ;
 		end if ;
-		
+
 		if count = 0 then
 			timer <= '1' ;
 		else
 			timer <= '0' ;
 		end if ;
-	end process ;
-
-	-- Change obst_pos value
-	process(timer)
-		variable tmp : integer range 31 downto 0 := 31 ;
-	begin
-		if rising_edge(timer) then
-			tmp := tmp - 1 ;
-		end if ;
-
-		pos <= tmp ;
 	end process ;
 
 	-- Change player value
@@ -117,24 +125,32 @@ begin
 		play <= tmp ;
 	end process ;
 
-	-- Changes obstacles values
-	process(id)
+	-- Gradually changes size of obstacles
+	process(timer)
+		variable tmp_low  : integer range 0 to 95 ;
+		variable tmp_high : integer range 0 to 95 := 40;
+		variable dir      : std_logic := '0' ;
 	begin
-		case id is
-			when 0 =>
-				low <= 20 ;
-				high <= 20 ;
-			when 1 =>
-				low <= 40 ;
-				high <= 40 ;
-			when 2 =>
-				low <= 40 ;
-				high <= 30 ;
-			when 3 =>
-				low <= 30 ;
-				high <= 40 ;
-		end case ;
+		if rising_edge(timer) then
+			if dir = '0' then
+				tmp_low  := tmp_low + 1 ;
+				tmp_high  := tmp_high - 1 ;
+			else
+				tmp_low  := tmp_low - 1 ;
+				tmp_high  := tmp_high + 1 ;
+			end if ;
+		end if ;
+
+		if tmp_high = 0 then
+			dir := '1' ;
+		elsif tmp_high = 40 then
+			dir := '0' ;
+		end if ;
+
+		n_low  <= tmp_low ;
+		n_high <= tmp_high ;
 	end process ;
+
 
 	ledg(3 downto 0) <= key ;
 	ledr <= sw ;
