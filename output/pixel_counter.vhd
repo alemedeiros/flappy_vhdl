@@ -11,7 +11,7 @@ use ieee.std_logic_1164.all ;
 
 entity pixel_counter is
 	generic (
-				H_HES : natural := 128 ;  -- Horizontal Resolution
+				H_RES : natural := 128 ;  -- Horizontal Resolution
 				V_RES : natural := 96     -- Vertical Resolution
 			) ;
 	port (

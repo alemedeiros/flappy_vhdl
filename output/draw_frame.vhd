@@ -16,13 +16,18 @@ use module.output.pixel_counter ;
 use module.output.frame_builder ;
 
 entity draw_frame is
+	generic (
+				H_RES  : natural := 128 ;  -- Horizontal Resolution
+				V_RES  : natural := 96 ;   -- Vertical Resolution
+				N_OBST : natural := 4      -- Number of obstacles
+			) ;
 	port (
 			 -- Input data
-			 player    : in  integer range 0 to 95 ;
-			 obst_low  : in  integer range 0 to 95 ;
-			 obst_high : in  integer range 0 to 95 ;
-			 obst_pos  : in  integer range 0 to 127 ;
-			 obst_id   : out integer range 0 to 3 ;
+			 player    : in  integer range 0 to V_RES - 1 ;
+			 obst_low  : in  integer range 0 to V_RES - 1 ;
+			 obst_high : in  integer range 0 to V_RES - 1 ;
+			 obst_pos  : in  integer range 0 to H_RES - 1 ;
+			 obst_id   : out integer range 0 to N_OBST - 1 ;
 
 			 -- VGA output
 			 red      : out std_logic_vector(3 downto 0) ;
@@ -49,8 +54,8 @@ architecture behavior of draw_frame is
 
 	-- Local control signals
 	signal we : std_logic := '1' ; -- VGA controller write enable
-	signal lin : integer range 0 to 95 ;
-	signal col : integer range 0 to 127 ;
+	signal lin : integer range 0 to V_RES - 1 ;
+	signal col : integer range 0 to H_RES - 1 ;
 
 	-- Frame builder signals
 	signal pixel_write  : std_logic := '1' ;
@@ -58,6 +63,10 @@ architecture behavior of draw_frame is
 begin
 	-- VGA controller
 	vga_controller: vgacon
+	generic map (
+					NUM_HORZ_PIXELS => H_RES,
+					NUM_VERT_PIXELS => V_RES
+				)
 	port map (
 				 clk27M       => clock,
 				 rstn         => not reset,
@@ -74,6 +83,10 @@ begin
 
 	-- Pixel counter, sweeps through each pixel of vga
 	pxl_count: pixel_counter
+	generic map (
+					H_RES => H_RES,
+					V_RES => V_RES
+				)
 	port map (
 				 lin => lin,
 				 col => col,
@@ -84,6 +97,11 @@ begin
 
 	-- Using the game state information, build a frame.
 	pxl_colour: frame_builder
+	generic map (
+					H_RES  => H_RES,
+					V_RES  => V_RES,
+					N_OBST => N_OBST
+				)
 	port map (
 				 player    => player,
 				 obst_low  => obst_low,
@@ -99,7 +117,7 @@ begin
 			 ) ;
 
 	-- Signal end of frame write
-	finish_write <= '1' when (lin = 95) and (col = 127) else '0' ;
+	finish_write <= '1' when (lin = V_RES - 1) and (col = H_RES - 1) else '0' ;
 
 	-- Finite State Machine for drawing frame.
 	fsm: process(state, finish_write)
