@@ -32,11 +32,11 @@ entity flappy_vhdl is
 			 ledr     : out std_logic_vector(0 to 9) ;
 			 ledg     : out std_logic_vector(0 to 7) ;
 			 -- VGA output
-			 red      : out std_logic_vector(3 downto 0) ;
-			 green    : out std_logic_vector(3 downto 0) ;
-			 blue     : out std_logic_vector(3 downto 0) ;
-			 hsync    : out std_logic ;
-			 vsync    : out std_logic ;
+			 vga_r	  : out std_logic_vector(3 downto 0) ;
+			 vga_g	  : out std_logic_vector(3 downto 0) ;
+			 vga_b	  : out std_logic_vector(3 downto 0) ;
+			 vga_hs	  : out std_logic ;
+			 vga_vs	  : out std_logic ;
 			 -- Clock
 			 clock_27 : in  std_logic
 		 ) ;
