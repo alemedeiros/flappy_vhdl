@@ -13,7 +13,8 @@ entity frame_builder is
 	generic (
 				H_RES  : natural := 128 ;  -- Horizontal Resolution
 				V_RES  : natural := 96 ;   -- Vertical Resolution
-				N_OBST : natural := 4
+				N_OBST : natural := 4 ;    -- Number of obstacles
+				P_POS  : natural := 20     -- Player Horizontal position
 			) ;
 	port (
 			 -- Game state data.
@@ -44,12 +45,12 @@ begin
 		curr_id := col / (H_RES / N_OBST) ;
 		obst_id <= curr_id ;
 
-		if lin = player and col = 10 then         -- Player colour
+		if lin = player and col = P_POS then         -- Player colour
 			colour <= "110" ;
 		elsif col = curr_id * (H_RES / N_OBST) + obst_pos then -- Obstacles colour
 			if lin < obst_high then              -- Top obstacle
 				colour <= "010" ;
-			elsif lin >= (V_RES - 1) - obst_low then      -- Bottom obstacle
+			elsif lin > (V_RES - 1) - obst_low then      -- Bottom obstacle
 				colour <= "010" ;
 			end if ;
 		end if ;
