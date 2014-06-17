@@ -59,7 +59,8 @@ package output is
 		generic (
 					H_RES  : natural := 128 ;  -- Horizontal Resolution
 					V_RES  : natural := 96 ;   -- Vertical Resolution
-					N_OBST : natural := 4      -- Number of obstacles
+					N_OBST : natural := 4 ;    -- Number of obstacles
+					P_POS  : natural := 20     -- Player Horizontal position
 				) ;
 		port (
 				 -- Game state data.
