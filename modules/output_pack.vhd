@@ -66,7 +66,7 @@ package output is
 				 player    : in  integer range 0 to V_RES - 1 ;
 				 obst_low  : in  integer range 0 to V_RES - 1 ;
 				 obst_high : in  integer range 0 to V_RES - 1 ;
-				 obst_pos  : in  integer range 0 to H_RES / N_OBST ;
+				 obst_pos  : in  integer range 0 to H_RES / N_OBST - 1 ;
 				 obst_id   : out integer range 0 to N_OBST - 1 ;
 
 				 lin : in  integer range 0 to V_RES - 1 ;
