@@ -12,10 +12,24 @@ package output is
 	-- obstacles) using vgacon.
 	component draw_frame
 		port (
+				 -- Input data
 				 position   : in  std_logic_vector(7 downto 0) ;
 				 obst_low   : in  std_logic_vector(7 downto 0) ;
 				 obst_high  : in  std_logic_vector(7 downto 0) ;
 				 obst_id    : out std_logic_vector(2 downto 0) ;
+
+				 -- VGA output
+				 red      : out std_logic_vector(3 downto 0) ;
+				 green    : out std_logic_vector(3 downto 0) ;
+				 blue     : out std_logic_vector(3 downto 0) ;
+				 hsync    : out std_logic ;
+				 vsync    : out std_logic ;
+
+				 -- DEBUG
+				 hex      : out std_logic_vector(6 downto 0) ;
+				 st       : in std_logic ;
+
+				 -- Control signals
 				 clock      : in  std_logic ;
 				 enable     : in  std_logic ;
 				 reset      : in  std_logic

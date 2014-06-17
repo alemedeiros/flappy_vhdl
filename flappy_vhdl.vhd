@@ -41,3 +41,28 @@ entity flappy_vhdl is
 			 clock_27 : in  std_logic
 		 ) ;
 end flappy_vhdl ;
+
+architecture behavior of flappy_vhdl is
+
+begin
+	output: draw_frame
+	port map (
+				 position   => "10101010",
+				 obst_low   => "00001111",
+				 obst_high  => "11110000",
+				 obst_id    => open,
+				 red        => vga_r,
+				 green      => vga_g,
+				 blue       => vga_b,
+				 hsync      => vga_hs,
+				 vsync      => vga_vs,
+				 clock      => clock_27,
+				 enable     => '1',
+
+				 -- DEBUG
+				 hex        => hex0,
+				 st         => sw(0),
+
+				 reset      => key(1)
+			 ) ;
+end behavior ;
