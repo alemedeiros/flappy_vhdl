@@ -29,8 +29,8 @@ entity flappy_vhdl is
 			 hex1     : out std_logic_vector(0 to 6) ;
 			 hex2     : out std_logic_vector(0 to 6) ;
 			 hex3     : out std_logic_vector(0 to 6) ;
-			 ledr     : out std_logic_vector(0 to 9) ;
-			 ledg     : out std_logic_vector(0 to 7) ;
+			 ledr     : out std_logic_vector(9 downto 0) ;
+			 ledg     : out std_logic_vector(7 downto 0) ;
 			 -- VGA output
 			 vga_r	  : out std_logic_vector(3 downto 0) ;
 			 vga_g	  : out std_logic_vector(3 downto 0) ;
