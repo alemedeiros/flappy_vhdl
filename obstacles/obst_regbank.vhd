@@ -32,7 +32,8 @@ entity obst_regbank is
 			 -- Control signal
 			 clock    : in  std_logic ;
 			 enable   : in  std_logic ;
-			 reset    : in  std_logic
+			 reset    : in  std_logic ;
+			 obst_rem : out std_logic
 		 ) ;
 end obst_regbank ;
 
@@ -45,7 +46,7 @@ architecture behavior of obst_regbank is
 	signal obst_high : obst_t ;
 begin
 	-- Reading values process
-	process(clock)
+	process(clock, enable)
 	begin
 		if enable = '1' and rising_edge(clock) then
 			low  <= obst_low(id) ;
@@ -54,8 +55,9 @@ begin
 	end process ;
 
 	-- Update obstacle values
-	process(up_clk, reset)
+	process(up_clk, reset, enable)
 		variable tmp_pos : integer range 0 to H_RES / N_OBST - 1 := H_RES / N_OBST - 1 ;
+		variable tmp_obst_rem: std_logic := '0';
 	begin
 		if reset = '1' then
 			-- Reset
@@ -74,11 +76,12 @@ begin
 
 				obst_low(N_OBST - 1)  <= in_low ;
 				obst_high(N_OBST - 1) <= in_high ;
+				tmp_obst_rem := '1' ;
 			end if ;
 
 			tmp_pos := tmp_pos - 1 ;
 		end if ;
 		pos <= tmp_pos ;
+		obst_rem <= tmp_obst_rem ;
 	end process ;
-
 end behavior ;

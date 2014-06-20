@@ -33,27 +33,35 @@ package obstacles is
 				 -- Control signal
 				 clock    : in  std_logic ;
 				 enable   : in  std_logic ;
-				 reset    : in  std_logic
+				 reset    : in  std_logic ;
+				 obst_rem : out std_logic
 			 ) ;
 	end component ;
 
 	-- Update and generate new obstacles for game.
 	component update_obstacles
-		port (
-				 rand         : in  std_logic_vector(7 downto 0) ;
-				 new_obst     : in  std_logic ;
-				 obst_count   : out std_logic_vector(7 downto 0) ;
-				 obst_rem     : out std_logic ;
-				 clock        : in  std_logic ;
-				 enable       : in  std_logic ;
-				 reset        : in  std_logic
-			 ) ;
+	   generic (
+				H_RES  : natural := 128 ;  -- Horizontal Resolution
+				V_RES  : natural := 96 ;   -- Vertical Resolution
+				N_OBST : natural := 4      -- Number of obstacles
+			) ;
+	   port (
+			 new_obst     : in  std_logic ;
+			 obst_count   : out integer range 0 to N_OBST - 1 ;
+			 obst_rem     : out std_logic ;
+			 clock        : in  std_logic ;
+			 enable       : in  std_logic ;
+			 reset        : in  std_logic
+		 ) ;
 	end component ;
 
 	-- Random number module.
 	component generate_random
-		port (
-				 rand   : out std_logic_vector(7 downto 0) ;
+	  generic (
+				V_RES  : integer := 96    -- Vertical Resolution
+			) ;
+	  port (
+				 rand   : out integer range 0 to (V_RES/2 - 1) ;
 				 clock  : in  std_logic
 			 ) ;
 	end component ;
