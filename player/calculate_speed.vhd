@@ -9,6 +9,10 @@
 
 library ieee ;
 use ieee.std_logic_1164.all ;
+use ieee.std_logic_unsigned.all ;
+
+library modules;
+use modules.nbit_register_pack.all ;
 
 entity calculate_speed is
 	port (
@@ -20,3 +24,27 @@ entity calculate_speed is
 			 reset   : in  std_logic
 		 ) ;
 end calculate_speed ;
+
+architecture behavior of calculate_speed is
+  signal new_sp, old_sp: std_logic_vector(7 downto 0);
+begin  
+  speed_reg: nbit_register
+    port map ( x     => new_sp,
+               y     => old_sp,
+               ld    => '1',
+               clr   => reset,
+               clk   => clock
+             ) ;
+             
+  process (clock)
+  begin
+   if enable = '1' and rising_edge(clock) then
+     if jump = '1' then 
+      new_sp <= (old_sp + 20) ;
+     else
+      new_sp <= (old_sp + gravity) ;
+     end if;          
+   end if;
+  end process;
+ speed <= old_sp;
+end behavior;
