@@ -31,8 +31,44 @@ entity game_control is
 end game_control ;
 
 
-architecture behavior of game_control is 
+architecture behavior of game_control is
 begin
-	
-	
+	process (reset, clock)
+	begin
+		if (reset = '1' or game_over = '1') then
+	  		 calculate_speed    <= '0' ;
+			 calculate_position <= '0' ; 
+			 obst_regbank       <= '0' ;
+			 update_obstacles   <= '0' ;
+			 new_obst			<= '0' ;
+			 colision_detection <= '0' ;
+			 draw_frame         <= '0' ;
+			 ledcon             <= '0' ;
+			
+		elsif (clock'event and clock = '1') then
+			 calculate_speed    <= '1' ;
+			 calculate_position <= '1' ; 
+			 obst_regbank       <= '1' ;
+			 update_obstacles   <= '1' ;
+ 			 new_obst			<= '1' ;
+			 colision_detection <= '1' ;
+			 draw_frame         <= '1' ;
+			 ledcon             <= '1' ;
+
+	 	  if obst_rem = '0' then
+			 obst_regbank       <= '0' ;
+			 update_obstacles   <= '0' ;
+			 new_obst			<= '0' ;
+		  end if ;
+		 	 
+		  if pause = '1' then 
+			 calculate_speed    <= '0' ;
+			 calculate_position <= '0' ; 
+			 obst_regbank       <= '0' ;
+			 update_obstacles   <= '0' ;
+			 new_obst			<= '0' ;
+			 colision_detection <= '0' ;
+		  end if;
+		end if ;  
+	end process ;	
 end behavior ;
