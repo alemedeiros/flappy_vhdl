@@ -10,14 +10,19 @@
 library ieee ;
 use ieee.std_logic_1164.all ;
 use ieee.std_logic_unsigned.all ;
+use ieee.numeric_std.all ;
+--use ieee.std_logic_arith.all ;
 
 library modules;
 use modules.nbit_register_pack.all ;
 
 entity calculate_position is
+   generic (
+			V_RES  : natural := 96    -- Vertical Resolution
+			) ;
 	port (
-			 speed    : in  std_logic_vector(7 downto 0) ;
-			 position : out std_logic_vector(7 downto 0) ;
+			 speed    : in  integer range - V_RES to V_RES - 1 ;
+			 position : out integer range 0 to V_RES - 1 ;
 			 clock    : in  std_logic ;
 			 enable   : in  std_logic ;
 			 reset    : in  std_logic
@@ -38,10 +43,10 @@ begin
   process (clock, reset)
   begin 
    if reset = '1' then 
-     new_y <= "01111111" ;
+     new_y <= "00001100" ;
    elsif enable = '1' and rising_edge(clock) then
      new_y <= (old_y + speed) ;      
    end if;          
   end process;
- position <= old_y;
+ position <= to_integer(signed(old_y)) ;
 end behavior;

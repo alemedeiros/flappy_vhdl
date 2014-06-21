@@ -29,3 +29,10 @@ entity game_control is
 			 ledcon             : out std_logic
 		 ) ;
 end game_control ;
+
+
+architecture behavior of game_control is 
+begin
+	
+	
+end behavior ;
