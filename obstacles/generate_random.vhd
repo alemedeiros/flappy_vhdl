@@ -8,6 +8,8 @@
 
 library ieee ;
 use ieee.std_logic_1164.all ;
+use ieee.std_logic_unsigned.all ;
+use ieee.numeric_std.all ;
 
 entity generate_random is
     generic (
@@ -22,9 +24,12 @@ end generate_random ;
 architecture behavior of generate_random is
 begin
    process (clock)
+     variable lfsr : std_logic_vector (4 downto 0) := "10011" ;
       begin
 		if rising_edge(clock) then
-		 rand <= V_RES/2 - 2;
+		 lfsr(0)                   := lfsr(4) xor lfsr(3);                      
+		 lfsr(4 downto 1)          := lfsr(3 downto 0); 
 		end if ;
+	 rand <= to_integer(unsigned(lfsr)) + 16 ;	
     end process ; 
 end behavior ;
