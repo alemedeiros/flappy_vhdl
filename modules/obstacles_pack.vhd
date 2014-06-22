@@ -7,7 +7,7 @@
 library ieee ;
 use ieee.std_logic_1164.all ;
 
-package obstacles is
+package obstacles_pack is
 
 	-- Set of n registers to save the obstacles positions (2 integers for each
 	-- obstacle), when an obstacle reaches the horizontal position 0, it is
@@ -47,7 +47,7 @@ package obstacles is
 			) ;
 	   port (
 			 new_obst     : in  std_logic ;
-			 obst_count   : out integer range 0 to N_OBST - 1 ;
+			 obst_count   : buffer integer range 0 to N_OBST - 1 ;
 			 obst_rem     : out std_logic ;
 			 clock        : in  std_logic ;
 			 enable       : in  std_logic ;
@@ -65,4 +65,4 @@ package obstacles is
 				 clock  : in  std_logic
 			 ) ;
 	end component ;
-end obstacles ;
+end obstacles_pack ;
