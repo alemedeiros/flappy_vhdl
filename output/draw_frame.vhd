@@ -14,6 +14,7 @@ library module ;
 use module.output.vgacon ;
 use module.output.pixel_counter ;
 use module.output.frame_builder ;
+use module.input.clock_divider ;
 
 entity draw_frame is
 	generic (
@@ -45,21 +46,30 @@ end draw_frame ;
 
 architecture behavior of draw_frame is
 	-- State type
-	type state_t is (clear, update_frame) ;
-	signal state	  : state_t := clear ;
-	signal next_state : state_t := clear ;
+	type state_t is (start, clear, update_frame) ;
+	signal state	    : state_t := start ;
+	signal next_state : state_t := start ;
 
 	signal finish_write : std_logic ;
-	signal data : std_logic_vector(2 downto 0) ;
 
 	-- Local control signals
-	signal we : std_logic := '1' ; -- VGA controller write enable
-	signal lin : integer range 0 to V_RES - 1 ;
-	signal col : integer range 0 to H_RES - 1 ;
+	signal we       : std_logic := '1' ; -- VGA controller write enable
+	signal lin      : integer range 0 to V_RES - 1 ;
+	signal col      : integer range 0 to H_RES - 1 ;
+	signal colour   : std_logic_vector(2 downto 0) ;
+
+	-- Pixel counter signals
+	signal pxl_count_rst : std_logic ;
+	signal pxl_count_en  : std_logic ;
 
 	-- Frame builder signals
-	signal pixel_write  : std_logic := '1' ;
-	signal pixel_colour : std_logic_vector(2 downto 0) ;
+	signal pxl_col_en : std_logic ;
+	signal pxl_colour : std_logic_vector(2 downto 0) ;
+
+	-- Timer signals
+	signal timer        : std_logic ;
+	signal timer_en     : std_logic ;
+	signal timer_rst    : std_logic ;
 begin
 	-- VGA controller
 	vga_controller: vgacon
@@ -78,25 +88,25 @@ begin
 				 write_clk    => clock,
 				 write_enable => we,
 				 write_addr   => col + (128 * lin),
-				 data_in      => data
+				 data_in      => colour
 			 ) ;
 
 	-- Pixel counter, sweeps through each pixel of vga
-	pxl_count: pixel_counter
+	count_pixel: pixel_counter
 	generic map (
 					H_RES => H_RES,
 					V_RES => V_RES
 				)
 	port map (
-				 lin => lin,
-				 col => col,
-				 clock => clock,
-				 reset => reset,
-				 enable => enable
+				 lin    => lin,
+				 col    => col,
+				 clock  => clock,
+				 reset  => pxl_count_rst,
+				 enable => pxl_count_en
 			 ) ;
 
 	-- Using the game state information, build a frame.
-	pxl_colour: frame_builder
+	build_frame: frame_builder
 	generic map (
 					H_RES  => H_RES,
 					V_RES  => V_RES,
@@ -112,37 +122,101 @@ begin
 				 lin       => lin,
 				 col       => col,
 
-				 colour    => pixel_colour,
-				 wren      => pixel_write
+				 enable    => pxl_col_en,
+				 colour    => pxl_colour
+			 ) ;
+
+	frame_timer : clock_divider
+	generic map (
+					RATE => 270000 
+				)
+	port map (
+				 clk_in  => clock,
+				 clk_out => timer,
+				 enable  => timer_en,
+				 reset   => timer_rst
 			 ) ;
 
 	-- Signal end of frame write
 	finish_write <= '1' when (lin = V_RES - 1) and (col = H_RES - 1) else '0' ;
 
 	-- Finite State Machine for drawing frame.
-	fsm: process(state, finish_write)
+	fsm: process(state, finish_write, timer, enable)
 	begin
-		case state is
-			when clear =>
-				if finish_write = '1' then
-					next_state <= update_frame ;
-				else
-					next_state <= clear ;
-				end if ;
-				we   <= '1' ;
-				data <= "000" ;
+		if enable = '0' then
+			next_state <= state ;
+			timer_en      <= '0' ;
+			timer_rst     <= '0' ;
 
-			when update_frame =>
-				next_state <= update_frame ;
-				we         <= pixel_write ;
-				data       <= pixel_colour ;
+			pxl_col_en    <= '0' ;
+			pxl_count_rst <= '0' ;
+			pxl_count_en  <= '0' ;
 
-			when others =>
-				next_state <= clear ;
-				we         <= '0' ;
-				data       <= "000" ;
+			we            <= '0' ;
+			colour        <= "000" ;
+		else
+			case state is
+				when start =>
+					if timer = '1' then
+						next_state <= update_frame ;
+					else
+						next_state <= start ;
+					end if ;
+					timer_en      <= '1' ;
+					timer_rst     <= '0' ;
 
-		end case ;
+					pxl_col_en    <= '0' ;
+					pxl_count_rst <= '1' ;
+					pxl_count_en  <= '0' ;
+
+					we            <= '0' ;
+					colour        <= "000" ;
+
+				when clear =>
+					if finish_write = '1' then
+						next_state <= start ;
+					else
+						next_state <= clear ;
+					end if ;
+					timer_en      <= '0' ;
+					timer_rst     <= '1' ;
+
+					pxl_col_en    <= '0' ;
+					pxl_count_rst <= '0' ;
+					pxl_count_en  <= '1' ;
+
+					we            <= '1' ;
+					colour        <= "000" ;
+
+				when update_frame =>
+					if finish_write = '1' then
+						next_state <= start ;
+					else
+						next_state <= update_frame ;
+					end if ;
+					timer_en      <= '0' ;
+					timer_rst     <= '1' ;
+
+					pxl_col_en    <= '1' ;
+					pxl_count_rst <= '0' ;
+					pxl_count_en  <= '1' ;
+
+					we            <= '1' ;
+					colour        <= pxl_colour ;
+
+				when others =>
+					next_state    <= start ;
+					timer_en      <= '0' ;
+					timer_rst     <= '1' ;
+
+					pxl_col_en    <= '0' ;
+					pxl_count_rst <= '1' ;
+					pxl_count_en  <= '0' ;
+
+					we            <= '0' ;
+					colour        <= "000" ;
+			end case ;
+		end if ;
 	end process ;
 
 	-- Update state process.

@@ -73,8 +73,8 @@ package output is
 				 lin : in  integer range 0 to V_RES - 1 ;
 				 col : in  integer range 0 to H_RES - 1 ;
 
-				 colour    : out std_logic_vector(2 downto 0) ;
-				 wren      : out std_logic
+				 enable    : in std_logic ;
+				 colour    : out std_logic_vector(2 downto 0)
 			 ) ;
 	end component ;
 

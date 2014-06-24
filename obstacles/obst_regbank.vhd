@@ -44,31 +44,48 @@ architecture behavior of obst_regbank is
 	-- Obstacles array
 	signal obst_low  : obst_t ;
 	signal obst_high : obst_t ;
+
+	signal updating : std_logic ;
+
+	signal tmp_pos      : integer range 0 to H_RES / N_OBST - 1 := H_RES / N_OBST - 1 ;
+	signal tmp_obst_rem : std_logic ;
 begin
 	-- Reading values process
 	process(clock, enable)
 	begin
-		if enable = '1' and rising_edge(clock) then
-			low  <= obst_low(id) ;
-			high <= obst_high(id) ;
+		if rising_edge(clock) and updating = '0' and enable = '1' then
+			low      <= obst_low(id) ;
+			high     <= obst_high(id) ;
+			pos      <= tmp_pos ;
+			if tmp_pos = 0 then
+				obst_rem <= '1' ;
+			else
+				obst_rem <= '0' ;
+			end if ;
 		end if ;
 	end process ;
 
+
 	-- Update obstacle values
 	process(up_clk, reset, enable)
-		variable tmp_pos : integer range 0 to H_RES / N_OBST - 1 := H_RES / N_OBST - 1 ;
-		variable tmp_obst_rem: std_logic := '0';
 	begin
 		if reset = '1' then
+			updating <= '1' ;
 			-- Reset
-			tmp_pos := H_RES / N_OBST - 1 ;
+			tmp_pos <= 0 ; -- H_RES / N_OBST - 1 ;
 			for i in 0 to N_OBST - 1 loop
 				obst_low(i)  <= 0 ;
 				obst_high(i) <= 0 ;
 			end loop ;
-		elsif enable = '1' and rising_edge(up_clk) then
-			-- Shift obstacles and read next obstacle
+			updating <= '0' ;
+		elsif rising_edge(up_clk) and enable = '1' then
+			updating <= '1' ;
+
 			if tmp_pos = 0 then
+				-- Shift obstacles and read next obstacle
+				tmp_obst_rem <= '1' ;
+				tmp_pos <= H_RES / N_OBST - 1 ;
+
 				for i in 1 to N_OBST - 1 loop
 					obst_low(i-1)  <= obst_low(i) ;
 					obst_high(i-1) <= obst_high(i) ;
@@ -76,12 +93,11 @@ begin
 
 				obst_low(N_OBST - 1)  <= in_low ;
 				obst_high(N_OBST - 1) <= in_high ;
-				tmp_obst_rem := '1' ;
+			else
+				tmp_obst_rem <= '0' ;
+				tmp_pos <= tmp_pos - 1 ;
 			end if ;
-
-			tmp_pos := tmp_pos - 1 ;
+			updating <= '0' ;
 		end if ;
-		pos <= tmp_pos ;
-		obst_rem <= tmp_obst_rem ;
 	end process ;
 end behavior ;
