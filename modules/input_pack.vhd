@@ -23,9 +23,15 @@ package input is
 
 	-- Divides 27MHz clock into adequate clock value
 	component clock_divider
+		generic (
+					RATE : natural := 270000
+				) ;
 		port (
-				 clock_27 : in  std_logic ;
-				 clock    : out std_logic
+				 clk_in  : in  std_logic ;
+				 clk_out : out std_logic ;
+
+				 enable  : in  std_logic ;
+				 reset   : in  std_logic
 			 ) ;
 	end component ;
 end input ;
