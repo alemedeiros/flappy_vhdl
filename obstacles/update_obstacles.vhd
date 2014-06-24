@@ -10,7 +10,7 @@ library ieee ;
 use ieee.std_logic_1164.all ;
 
 library modules;
-use modules.obstacles_pack.all;
+use modules.obstacles.all;
 
 entity update_obstacles is
     generic (

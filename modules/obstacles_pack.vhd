@@ -7,7 +7,7 @@
 library ieee ;
 use ieee.std_logic_1164.all ;
 
-package obstacles_pack is
+package obstacles is
 
 	-- Set of n registers to save the obstacles positions (2 integers for each
 	-- obstacle), when an obstacle reaches the horizontal position 0, it is
@@ -40,29 +40,29 @@ package obstacles_pack is
 
 	-- Update and generate new obstacles for game.
 	component update_obstacles
-	   generic (
-				H_RES  : natural := 128 ;  -- Horizontal Resolution
-				V_RES  : natural := 96 ;   -- Vertical Resolution
-				N_OBST : natural := 4      -- Number of obstacles
-			) ;
-	   port (
-			 new_obst     : in  std_logic ;
-			 obst_count   : buffer integer range 0 to N_OBST - 1 ;
-			 obst_rem     : out std_logic ;
-			 clock        : in  std_logic ;
-			 enable       : in  std_logic ;
-			 reset        : in  std_logic
-		 ) ;
+		generic (
+					H_RES  : natural := 128 ;  -- Horizontal Resolution
+					V_RES  : natural := 96 ;   -- Vertical Resolution
+					N_OBST : natural := 4      -- Number of obstacles
+				) ;
+		port (
+				 new_obst     : in  std_logic ;
+				 obst_count   : buffer integer range 0 to N_OBST - 1 ;
+				 obst_rem     : out std_logic ;
+				 clock        : in  std_logic ;
+				 enable       : in  std_logic ;
+				 reset        : in  std_logic
+			 ) ;
 	end component ;
 
 	-- Random number module.
 	component generate_random
-	  generic (
-				V_RES  : integer := 96    -- Vertical Resolution
-			) ;
-	  port (
+		generic (
+					V_RES  : integer := 96    -- Vertical Resolution
+				) ;
+		port (
 				 rand   : out integer range 0 to (V_RES/2 - 1) ;
 				 clock  : in  std_logic
 			 ) ;
 	end component ;
-end obstacles_pack ;
+end obstacles ;
