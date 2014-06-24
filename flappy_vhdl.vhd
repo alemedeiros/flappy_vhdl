@@ -44,6 +44,7 @@ end flappy_vhdl ;
 
 architecture behavior of flappy_vhdl is
 	signal timer : std_logic ;
+	signal draw_en : std_logic ;
 
 	signal pos  : integer range 31 downto 0;
 	signal play : integer range 0 to 95 ;
@@ -68,7 +69,8 @@ begin
 
 				 clock   => clock_27,
 				 enable  => '1',
-				 reset   => not key(2)
+				 reset   => not key(2),
+				 obst_rem => draw_en
 			 ) ;
 
 	output: draw_frame
@@ -84,26 +86,21 @@ begin
 				 hsync      => vga_hs,
 				 vsync      => vga_vs,
 				 clock      => clock_27,
-				 enable     => '1',
+				 enable     => not draw_en,
 				 reset      => not key(1)
 			 ) ;
 
-	-- Simple 1 second timer
-	process(clock_27)
-		variable count : integer range 0 to 2000000 := 0 ;
-	begin
-		if rising_edge(clock_27) then
-			count := count + 1 ;
-		end if ;
+	-- Simple timer
+	div: clock_divider
+	generic map ( RATE => 2000000 )
+	port map (
+				 clk_in  => clock_27,
+				 clk_out => timer,
+				 enable  => '1',
+				 reset   => '0'
+			 ) ;
 
-		if count = 0 then
-			timer <= '1' ;
-		else
-			timer <= '0' ;
-		end if ;
-	end process ;
-
-	-- Change player value
+	-- DEBUG: Change player value
 	process(timer)
 		variable tmp : integer range 0 to 95 := 47 ;
 		variable dir : std_logic := '0' ;
@@ -125,7 +122,7 @@ begin
 		play <= tmp ;
 	end process ;
 
-	-- Gradually changes size of obstacles
+	-- DEBUG: Gradually changes size of obstacles
 	process(timer)
 		variable tmp_low  : integer range 0 to 95 ;
 		variable tmp_high : integer range 0 to 95 := 40;
@@ -151,7 +148,8 @@ begin
 		n_high <= tmp_high ;
 	end process ;
 
-
+	-- DEBUG
+	ledg(5) <= draw_en ;
 	ledg(3 downto 0) <= key ;
 	ledr <= sw ;
 end behavior ;
