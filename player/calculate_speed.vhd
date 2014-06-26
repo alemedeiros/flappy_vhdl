@@ -43,7 +43,7 @@ begin
   process (clock)
   begin
    if enable = '1' and rising_edge(clock) then
-     if jump = '1' then 
+     if jump = '1' and rising_edge(jump) then 
       new_sp <= (old_sp + 20) ;
      else
       new_sp <= (old_sp + gravity) ;
