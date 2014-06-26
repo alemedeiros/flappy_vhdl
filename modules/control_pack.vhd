@@ -18,6 +18,7 @@ package control is
 				 clock      : in  std_logic ;
 				 obst_rem   : in  std_logic ;
 				 new_obst   : out std_logic ;
+				 timer      : in  std_logic ;
 
 				 -- Enable signals for each module.
 				 calculate_speed    : out std_logic ;
@@ -26,7 +27,8 @@ package control is
 				 update_obstacles   : out std_logic ;
 				 colision_detection : out std_logic ;
 				 draw_frame         : out std_logic ;
-				 ledcon             : out std_logic
+				 ledcon             : out std_logic ;
+				 internal_reset     : out std_logic
 			 ) ;
 	end component ;
 end control ;

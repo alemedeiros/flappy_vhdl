@@ -55,7 +55,45 @@ architecture behavior of flappy_vhdl is
 
 	signal n_low  : integer range 0 to 95 ;
 	signal n_high : integer range 0 to 95 ;
+
+	signal game_over : std_logic ;
+	signal reset     : std_logic ;
+	signal pause     : std_logic ;
+	signal jump      : std_logic ;
+	signal obst_rem  : std_logic ;
+	signal new_obst  : std_logic ;
+	signal int_reset : std_logic ;
+
+	-- Enable signals for each module.
+	signal ctl_calculate_speed    : std_logic ;
+	signal ctl_calculate_position : std_logic ;
+	signal ctl_obst_regbank       : std_logic ;
+	signal ctl_update_obstacles   : std_logic ;
+	signal ctl_colision_detection : std_logic ;
+	signal ctl_draw_frame         : std_logic ;
+	signal ctl_ledcon             : std_logic ;
 begin
+	gc: game_control
+	port map (
+			 game_over  => game_over,
+			 reset      => reset,
+			 pause      => pause,
+			 jump       => jump,
+			 clock      => clock_27,
+			 obst_rem   => obst_rem,
+			 new_obst   => new_obst,
+			 timer      => timer,
+
+			 calculate_speed    => ctl_calculate_speed,
+			 calculate_position => ctl_calculate_position,
+			 obst_regbank       => ctl_obst_regbank,
+			 update_obstacles   => ctl_update_obstacles,
+			 colision_detection => ctl_colision_detection,
+			 draw_frame         => ctl_draw_frame,
+			 ledcon             => ctl_ledcon,
+			 internal_reset     => int_reset
+		 ) ;
+
 	regbank: obst_regbank
 	port map (
 				 in_low  => n_low,
@@ -68,8 +106,8 @@ begin
 				 pos     => pos,
 
 				 clock   => clock_27,
-				 enable  => '1',
-				 reset   => not key(2),
+				 enable  => ctl_obst_regbank,
+				 reset   => int_reset,
 				 obst_rem => draw_en
 			 ) ;
 
@@ -86,8 +124,8 @@ begin
 				 hsync      => vga_hs,
 				 vsync      => vga_vs,
 				 clock      => clock_27,
-				 enable     => not draw_en,
-				 reset      => not key(1)
+				 enable     => ctl_draw_frame,
+				 reset      => int_reset
 			 ) ;
 
 	-- Simple timer
@@ -97,15 +135,17 @@ begin
 				 clk_in  => clock_27,
 				 clk_out => timer,
 				 enable  => '1',
-				 reset   => '0'
+				 reset   => int_reset
 			 ) ;
 
 	-- DEBUG: Change player value
-	process(timer)
+	process(timer, int_reset)
 		variable tmp : integer range 0 to 95 := 47 ;
 		variable dir : std_logic := '0' ;
 	begin
-		if rising_edge(timer) then
+		if int_reset = '1' then
+			tmp := 47 ;
+		elsif rising_edge(timer) and ctl_calculate_position = '1' then
 			if dir = '0' then
 				tmp := tmp + 1 ;
 			else
@@ -149,6 +189,13 @@ begin
 	end process ;
 
 	-- DEBUG
+	game_over <= sw(9) ;
+	reset     <= sw(8) ;
+	pause     <= sw(7) ;
+	jump      <= key(3) ;
+	obst_rem  <= sw(6) ;
+	new_obst  <= sw(5) ;
+
 	ledg(5) <= draw_en ;
 	ledg(3 downto 0) <= key ;
 	ledr <= sw ;

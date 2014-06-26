@@ -47,7 +47,7 @@ end draw_frame ;
 architecture behavior of draw_frame is
 	-- State type
 	type state_t is (start, clear, update_frame) ;
-	signal state	    : state_t := start ;
+	signal state	  : state_t := start ;
 	signal next_state : state_t := start ;
 
 	signal finish_write : std_logic ;

@@ -51,9 +51,9 @@ architecture behavior of obst_regbank is
 	signal tmp_obst_rem : std_logic ;
 begin
 	-- Reading values process
-	process(clock, enable)
+	process(clock)
 	begin
-		if rising_edge(clock) and updating = '0' and enable = '1' then
+		if rising_edge(clock) and updating = '0' then
 			low      <= obst_low(id) ;
 			high     <= obst_high(id) ;
 			pos      <= tmp_pos ;
