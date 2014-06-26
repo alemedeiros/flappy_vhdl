@@ -21,6 +21,8 @@ entity update_obstacles is
 	port (
 			 new_obst     : in  std_logic ;
 			 obst_count   : buffer integer range 0 to 255 ;
+			 low_obst     : out integer range 0 to V_RES - 1 ;
+			 high_obst    : out integer range 0 to V_RES - 1 ;
 			 obst_rem     : out std_logic ;
 			 clock        : in  std_logic ;
 			 enable       : in  std_logic ;
@@ -29,8 +31,6 @@ entity update_obstacles is
 end update_obstacles ;
 
 architecture behavior of update_obstacles is
-  signal aux_low, aux_high : integer range 0 to V_RES/2 - 1 ;
-  signal low, high     : integer range 0 to V_RES - 1 ;
   signal pos      : integer range 0 to H_RES / N_OBST - 1 ;
 begin
 
@@ -46,32 +46,12 @@ begin
  qlow1: generate_random
 	 generic map (V_RES => V_RES)
      port map (clock => new_obst,
-			  rand  => aux_low) ;
+			  rand  => low_obst) ;
 			  
  qhigh1: generate_random
 	 generic map (V_RES => V_RES)
      port map (clock => new_obst,
-			  rand  => aux_high) ;
+			  rand  => high_obst) ;
 
-
-qbanco: obst_regbank
-  generic map (H_RES => H_RES, 
-			   V_RES => V_RES,
-			   N_OBST => N_OBST
-			)
-  port map (
-			 in_low   => aux_low,
-			 in_high  => aux_high,
-			 up_clk   => new_obst,
-
-			 id 	  => 0,
-			 low      => low,
-			 high     => high,
-			 pos      => pos,
-
-			 clock    => clock,
-			 enable   => enable,
-			 reset    => reset,
-			 obst_rem => obst_rem
-		 ) ;
+  obst_rem <= new_obst ;
 end behavior; 
