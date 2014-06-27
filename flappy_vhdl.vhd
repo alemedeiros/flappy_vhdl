@@ -22,8 +22,8 @@ use modules.output.all ;
 use modules.player.all ;
 
 entity flappy_vhdl is
-    generic (
-			V_RES  : natural := 96    -- Vertical Resolution
+	generic (
+				V_RES  : natural := 96    -- Vertical Resolution
 			) ;
 	port (
 			 -- Input keys
@@ -54,6 +54,7 @@ architecture behavior of flappy_vhdl is
 
 	signal pos  : integer range 31 downto 0;
 	signal play : integer range 0 to 95 ;
+	signal gravity : integer range 0 to 95 ;
 
 	signal id   : integer range 0 to 3 ;
 	signal low  : integer range 0 to 95 ;
@@ -78,30 +79,40 @@ architecture behavior of flappy_vhdl is
 	signal ctl_colision_detection : std_logic ;
 	signal ctl_draw_frame         : std_logic ;
 	signal ctl_ledcon             : std_logic ;
-	
+
 	signal aux_speed    : integer range - V_RES to V_RES - 1 ;
 	signal aux_position : integer range 0 to V_RES - 1 ;
 begin
 	gc: game_control
 	port map (
-			 game_over  => game_over,
-			 reset      => reset,
-			 pause      => pause,
-			 jump       => jump,
-			 clock      => clock_27,
-			 obst_rem   => obst_rem,
-			 new_obst   => new_obst,
-			 timer      => timer,
+				 game_over  => game_over,
+				 reset      => reset,
+				 pause      => pause,
+				 jump       => jump,
+				 clock      => clock_27,
+				 obst_rem   => obst_rem,
+				 new_obst   => new_obst,
+				 timer      => timer,
 
-			 calculate_speed    => ctl_calculate_speed,
-			 calculate_position => ctl_calculate_position,
-			 obst_regbank       => ctl_obst_regbank,
-			 update_obstacles   => ctl_update_obstacles,
-			 colision_detection => ctl_colision_detection,
-			 draw_frame         => ctl_draw_frame,
-			 ledcon             => ctl_ledcon,
-			 internal_reset     => int_reset
-		 ) ;
+				 calculate_speed    => ctl_calculate_speed,
+				 calculate_position => ctl_calculate_position,
+				 obst_regbank       => ctl_obst_regbank,
+				 update_obstacles   => ctl_update_obstacles,
+				 colision_detection => ctl_colision_detection,
+				 draw_frame         => ctl_draw_frame,
+				 ledcon             => ctl_ledcon,
+				 internal_reset     => int_reset
+			 ) ;
+
+----input: input_parser
+----port map (
+----			 key      => key,
+----			 sw       => sw,
+----			 jump     => jump,
+----			 reset    => reset,
+----			 pause    => pause,
+----			 gravity  => gravity
+----		 ) ;
 
 	regbank: obst_regbank
 	port map (
@@ -172,44 +183,33 @@ begin
 		n_low  <= tmp_low ;
 		n_high <= tmp_high ;
 	end process ;
-	
+
 	div2: clock_divider
-	generic map ( RATE => 2114783640 )
+	generic map ( RATE => 27000000 )
 	port map (
 				 clk_in  => clock_27,
 				 clk_out => timer2,
 				 enable  => '1',
 				 reset   => int_reset
 			 ) ;
-	
-	-- calculate speed	
-	cs: calculate_speed
+
+	-- calculate position	
+	cp: calculate_position
 	generic map ( V_RES => V_RES )
 	port map (
-		     jump     =>  jump ,
-			 gravity  =>  "0001" ,
-			 speed    =>  aux_speed ,
-			 clock    =>  timer2 ,
-			 enable   =>  ctl_calculate_speed ,
-			 reset    =>  reset
-		 ) ;
-   
-    -- calculate position	
-	cp: calculate_position
-    generic map ( V_RES => V_RES )
-	port map (
-			 speed    =>  aux_speed ,
-			 position =>  play ,
-			 clock    =>  timer2 ,
-			 enable   =>  ctl_calculate_position ,
-			 reset    =>  reset 
-		 ) ;
+				 jump     =>  jump,
+				 gravity  =>  1,
+				 position =>  play ,
+				 clock    =>  timer2 ,
+				 enable   =>  ctl_calculate_position ,
+				 reset    =>  int_reset
+			 ) ;
 
 	-- DEBUG
 	game_over <= sw(9) ;
 	reset     <= sw(8) ;
 	pause     <= sw(7) ;
-	jump      <= key(3) ;
+	jump      <= not key(2) ;
 	obst_rem  <= sw(6) ;
 	new_obst  <= sw(5) ;
 

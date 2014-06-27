@@ -9,19 +9,14 @@
 
 library ieee ;
 use ieee.std_logic_1164.all ;
-use ieee.std_logic_unsigned.all ;
-use ieee.numeric_std.all ;
---use ieee.std_logic_arith.all ;
-
-library modules;
-use modules.nbit_register_pack.all ;
 
 entity calculate_position is
-   generic (
-			V_RES  : natural := 96    -- Vertical Resolution
+	generic (
+				V_RES  : natural := 96    -- Vertical Resolution
 			) ;
 	port (
-			 speed    : in  integer range - V_RES to V_RES - 1 ;
+			 jump     : in  std_logic ;
+			 gravity  : in  integer range 0 to V_RES - 1 ;
 			 position : out integer range 0 to V_RES - 1 ;
 			 clock    : in  std_logic ;
 			 enable   : in  std_logic ;
@@ -31,25 +26,32 @@ end calculate_position ;
 
 
 architecture behavior of calculate_position is
-  signal new_y: std_logic_vector(7 downto 0) := "00110000";
-  signal old_y: std_logic_vector(7 downto 0) := "00110000";
-begin  
-   position_reg: nbit_register
-    port map ( x     => new_y,
-               y     => old_y,
-               ld    => '1',
-               clr   => '0',
-               clk   => clock
-             ) ; 
- 
-  process (clock, reset)
-  begin 
-   if reset = '1' then 
-     new_y <= "00110000" ;
-   elsif enable = '1' and rising_edge(clock) then
-     new_y <= (old_y + speed) ;      
-   end if;          
-  end process;
-  
- position <= to_integer(signed(old_y)) ;
+	--signal y: integer range 0 to V_RES - 1 := V_RES / 2 ;
+	signal my_speed : integer range - V_RES to V_RES - 1 ;
+begin
+	process (clock, reset)
+		variable y: integer range 0 to V_RES - 1 := V_RES / 2 ;
+	begin
+		if reset = '1' then
+			y := V_RES / 2 ;
+		elsif enable = '1' and rising_edge(clock) then
+			y := y + my_speed ;
+		end if;
+		position <= y ;
+	end process;
+
+	process (clock, reset)
+		variable sp  : integer range - V_RES to V_RES - 1 := -5 ;
+	begin
+		if reset = '1' then
+			sp := -5 ;
+		elsif enable = '1' and rising_edge(clock) then
+			if jump = '1' then
+				sp := -5 ;
+			else
+				sp := sp + gravity ;
+			end if ;
+		end if ;
+		my_speed <= sp;
+	end process ;
 end behavior;
