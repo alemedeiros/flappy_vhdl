@@ -82,7 +82,7 @@ package output is
 	-- outputs.
 	component ledcon
 		port (
-				 obst_count : in  std_logic_vector(7 downto 0) ;
+				 obst_count : in  integer range 0 to 255 ;
 				 pause      : in  std_logic ;
 				 game_over  : in  std_logic ;
 				 hex0       : out std_logic_vector(0 to 6) ;
@@ -97,6 +97,11 @@ package output is
 			 ) ;
 	end component ;
 
+	component hex2disp
+		port ( num  : in  std_logic_vector(3 downto 0) ;  -- Input value
+			   led  : out std_logic_vector(0 to 6)        -- 7seg led display signal
+		   ) ;
+	end component ;
 	-- VGA controller
 	component vgacon
 		generic (
