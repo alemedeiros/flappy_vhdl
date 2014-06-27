@@ -86,6 +86,7 @@ architecture behavior of flappy_vhdl is
 	signal aux_position : integer range 0 to V_RES - 1 ;
 	
 	signal obst_count : integer range 0 to 255 ;
+	signal count_aux : std_logic_vector(15 downto 0) ;
 	
 begin
 	gc: game_control
@@ -120,18 +121,18 @@ begin
 ----		 ) ;
 
 	-- leds controller
-	lcon: ledcon
-	port map (
-				 obst_count => obst_count,
-				 pause      => pause,
-				 game_over  => game_over,
-				 hex0       => hex0,
-				 hex1       => hex1,
-				 hex2       => hex2,
-				 hex3       => hex3,
-				 ledr       => ledr,
-				 ledg       => ledg
-			 ) ;
+----lcon: ledcon
+----port map (
+----			 obst_count => obst_count,
+----			 pause      => '0',--pause,
+----			 game_over  => '1',--game_over,
+----			 hex0       => hex0,
+----			 hex1       => hex1,
+----			 hex2       => hex2,
+----			 hex3       => hex3,
+----			 ledr       => open,--ledr,
+----			 ledg       => open --ledg
+----		 ) ;
 
 	colisi: colision_detection
 	port map (
@@ -205,7 +206,7 @@ begin
 		 ) ;
 	
 	div2: clock_divider
-	generic map ( RATE => 10000000 )
+	generic map ( RATE => 9000000 )
 	port map (
 				 clk_in  => clock_27,
 				 clk_out => timer2,
@@ -226,6 +227,12 @@ begin
 			 ) ;
 
 	-- DEBUG
+	count_aux <= std_logic_vector(to_unsigned(obst_count, 16)) ;
+	hex0 <= (others => '1') ;
+	disp0: hex2disp port map (count_aux(3  downto  0), hex1) ;
+	disp1: hex2disp port map (count_aux(7  downto  4), hex2) ;
+	hex3 <= (others => '1') ;
+
 	--game_over <= sw(9) ;
 	reset     <= not key(1) ;
 	pause     <= sw(7) ;
@@ -233,7 +240,6 @@ begin
 	obst_rem  <= sw(6) ;
 	new_obst  <= sw(5) ;
 
-	--ledg(5) <= game_over ;
-	--ledg(3 downto 0) <= key ;
-	--ledr <= sw ;
+	ledr(0) <= game_over ;
+	ledg(0) <= pause ;
 end behavior ;

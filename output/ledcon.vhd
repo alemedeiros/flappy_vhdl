@@ -31,13 +31,14 @@ end ledcon ;
 architecture behavior of ledcon is
 	signal val : std_logic_vector(15 downto 0) ;
 begin
+
 	val <= std_logic_vector(to_unsigned(obst_count, 16)) ;
-
-	ledr <= (others => '1') when game_over = '1' else (others => '0') ;
-	ledg <= (others => '1') when pause = '1' else (others => '0') ;
-
 	hex0 <= (others => '1') ;
 	disp0: hex2disp port map (val(3  downto  0), hex1) ;
 	disp1: hex2disp port map (val(7  downto  4), hex2) ;
 	hex3 <= (others => '1') ;
+
+	--ledr <= (others => game_over) ;
+	--ledg <= (others => pause) ;
+
 end behavior ;
