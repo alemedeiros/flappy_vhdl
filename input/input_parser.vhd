@@ -9,8 +9,13 @@
 
 library ieee ;
 use ieee.std_logic_1164.all ;
+use ieee.std_logic_unsigned.all ;
+use ieee.numeric_std.all ;
 
 entity input_parser is
+	generic (
+				V_RES  : natural := 96    -- Vertical Resolution
+			) ;
 	port (
 			 key      : in  std_logic_vector(3 downto 0) ;
 			 sw       : in  std_logic_vector(9 downto 0) ;
@@ -18,7 +23,7 @@ entity input_parser is
 			 jump     : out std_logic ;
 			 reset    : out std_logic ;
 			 pause    : out std_logic ;
-			 gravity  : out std_logic_vector(7 downto 0)
+			 gravity  : out integer range 0 to V_RES - 1 
 		 ) ;
 end input_parser ;
 
@@ -32,10 +37,10 @@ begin
 	begin
 		if rising_edge(clock) then
 			-- Update output.
-			jump	<= tmp_key(3) ;
-			reset	<= tmp_key(2) ;
+			jump	<= not tmp_key(3) ;
+			reset	<= not tmp_key(2) ;
 			pause	<= tmp_sw(9) ;
-			gravity <= tmp_sw(7 downto 0) ;
+			gravity <= to_integer(signed(tmp_sw(7 downto 0))) ;
 
 			-- Update local buffer.
 			tmp_key := key ;

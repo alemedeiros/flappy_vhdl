@@ -11,13 +11,16 @@ package input is
 	-- Parses input signals from switches and keys and attributes the adequate
 	-- values to the internal signals.
 	component input_parser
+		generic (
+					V_RES  : natural := 96    -- Vertical Resolution
+				) ;
 		port (
 				 key      : in  std_logic_vector(3 downto 0) ;
 				 sw       : in  std_logic_vector(9 downto 0) ;
 				 jump     : out std_logic ;
 				 reset    : out std_logic ;
 				 pause    : out std_logic ;
-				 gravity  : out std_logic_vector(7 downto 0)
+				 gravity  : out integer range 0 to V_RES - 1
 			 ) ;
 	end component ;
 
