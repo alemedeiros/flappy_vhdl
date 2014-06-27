@@ -12,11 +12,15 @@ use IEEE.std_logic_arith.all;
 
 
 entity colision_detection is
-    generic (
-			V_RES  : natural := 96    -- Vertical Resolution
+	generic (
+				H_RES  : natural := 128 ;  -- Horizontal Resolution
+				V_RES  : natural := 96 ;   -- Vertical Resolution
+				N_OBST : natural := 4 ;    -- Number of obstacles
+				P_POS  : natural := 20     -- Player Horizontal position
 			) ;
 	port (
-			 position   : in  integer range 0 to V_RES - 1 ;
+			 player     : in  integer range 0 to V_RES - 1 ;
+			 position   : in  integer range 0 to H_RES / N_OBST - 1;
 			 obst_low   : in  integer range 0 to V_RES - 1 ;
 			 obst_high  : in  integer range 0 to V_RES - 1 ;
 			 game_over  : out std_logic ;
@@ -29,14 +33,15 @@ end colision_detection ;
 architecture behavior of colision_detection is 
 begin
 	-- Reading values process
-	process(clock, enable)
-	variable tmp_game_over: std_logic := '0';
+	process(clock)
+		variable tmp : std_logic := '0' ;
 	begin
 		if (reset = '0' and enable = '1' and rising_edge(clock)) then
-			if (position = 0 or obst_low >= position or V_RES - 1 - obst_high <= position) then
-			  tmp_game_over := '1' ;
+			tmp := '0' ;
+			if (player >= V_RES or player < 0 or (((V_RES - 1 - obst_low) <= player or obst_high > player) and position = P_POS) ) then
+				tmp := '1' ;
 			end if;
 		end if ;
-	game_over <= tmp_game_over ;
+		game_over <= tmp ;
 	end process ;
 end behavior ;

@@ -29,6 +29,8 @@ package obstacles is
 				 low      : out integer range 0 to V_RES - 1 ;
 				 high     : out integer range 0 to V_RES - 1 ;
 				 pos      : out integer range 0 to H_RES / N_OBST - 1 ;
+				 f_low    : out integer range 0 to V_RES - 1 ;
+				 f_high   : out integer range 0 to V_RES - 1 ;
 
 				 -- Control signal
 				 clock    : in  std_logic ;

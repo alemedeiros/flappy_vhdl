@@ -62,6 +62,8 @@ architecture behavior of flappy_vhdl is
 
 	signal n_low  : integer range 0 to 95 ;
 	signal n_high : integer range 0 to 95 ;
+	signal first_low  : integer range 0 to 95 ;
+	signal first_high : integer range 0 to 95 ;
 
 	signal game_over : std_logic ;
 	signal reset     : std_logic ;
@@ -80,7 +82,7 @@ architecture behavior of flappy_vhdl is
 	signal ctl_draw_frame         : std_logic ;
 	signal ctl_ledcon             : std_logic ;
 
-	signal aux_speed    : integer range - V_RES to V_RES - 1 ;
+	signal aux_speed    : integer range -V_RES to V_RES - 1 ;
 	signal aux_position : integer range 0 to V_RES - 1 ;
 	
 	signal obst_count : integer range 0 to 255 ;
@@ -117,6 +119,18 @@ begin
 ----			 gravity  => gravity
 ----		 ) ;
 
+	colisi: colision_detection
+	port map (
+				 player     => play,
+				 position   => pos,
+				 obst_low   => first_low,
+				 obst_high  => first_high,
+				 game_over  => game_over,
+				 clock      => clock_27,
+				 enable     => ctl_colision_detection,
+				 reset      => int_reset
+			 ) ;
+
 	regbank: obst_regbank
 	port map (
 				 in_low  => n_low,
@@ -127,6 +141,8 @@ begin
 				 low     => low,
 				 high    => high,
 				 pos     => pos,
+				 f_low   => first_low,
+				 f_high  => first_high,
 
 				 clock   => clock_27,
 				 enable  => ctl_obst_regbank,
@@ -175,7 +191,7 @@ begin
 		 ) ;
 	
 	div2: clock_divider
-	generic map ( RATE => 15000000 )
+	generic map ( RATE => 10000000 )
 	port map (
 				 clk_in  => clock_27,
 				 clk_out => timer2,
@@ -188,7 +204,7 @@ begin
 	generic map ( V_RES => V_RES )
 	port map (
 				 jump     =>  jump,
-				 gravity  =>  1,
+				 gravity  =>  2,
 				 position =>  play ,
 				 clock    =>  timer2 ,
 				 enable   =>  ctl_calculate_position ,
@@ -196,14 +212,14 @@ begin
 			 ) ;
 
 	-- DEBUG
-	game_over <= sw(9) ;
-	reset     <= sw(8) ;
+	--game_over <= sw(9) ;
+	reset     <= not key(1) ;
 	pause     <= sw(7) ;
 	jump      <= not key(2) ;
 	obst_rem  <= sw(6) ;
 	new_obst  <= sw(5) ;
 
-	ledg(5) <= draw_en ;
+	ledg(5) <= game_over ;
 	ledg(3 downto 0) <= key ;
 	ledr <= sw ;
 end behavior ;

@@ -50,7 +50,7 @@ begin
 			  clock => new_obst,
 			  rand  => low_aux) ;
 			  
-  high_obst <= V_RES - low_aux - 20 ;
+  high_obst <= V_RES - low_aux - 35 ;
 
   low_obst <= low_aux ;
   obst_rem <= new_obst ;

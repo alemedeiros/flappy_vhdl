@@ -28,6 +28,8 @@ entity obst_regbank is
 			 low      : out integer range 0 to V_RES - 1 ;
 			 high     : out integer range 0 to V_RES - 1 ;
 			 pos      : out integer range 0 to H_RES / N_OBST - 1 ;
+			 f_low    : out integer range 0 to V_RES - 1 ;
+			 f_high   : out integer range 0 to V_RES - 1 ;
 
 			 -- Control signal
 			 clock    : in  std_logic ;
@@ -56,6 +58,8 @@ begin
 		if rising_edge(clock) and updating = '0' then
 			low      <= obst_low(id) ;
 			high     <= obst_high(id) ;
+			f_low    <= obst_low(0) ;
+			f_high   <= obst_high(0) ;
 			pos      <= tmp_pos ;
 			if tmp_pos = 0 then
 				obst_rem <= '1' ;
