@@ -76,7 +76,7 @@ begin
 					update_obstacles   <= '1' ;
 					new_obst           <= '0' ; -- CHECK
 					colision_detection <= '1' ;
-					draw_frame         <= '1' ; -- Migué
+					draw_frame         <= '1' ;
 					ledcon             <= '0' ;
 					internal_reset     <= '0' ;
 

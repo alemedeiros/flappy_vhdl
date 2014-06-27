@@ -38,7 +38,7 @@ begin
 	begin
 		if (reset = '0' and enable = '1' and rising_edge(clock)) then
 			tmp := '0' ;
-			if (player >= V_RES or player < 0 or (((V_RES - 1 - obst_low) <= player or obst_high > player) and position = P_POS) ) then
+			if (player >= V_RES or player < 0 or (((V_RES - 1 - obst_low) < player or obst_high > player) and position = P_POS) ) then
 				tmp := '1' ;
 			end if;
 		end if ;
