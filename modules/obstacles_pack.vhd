@@ -62,7 +62,8 @@ package obstacles is
 		generic (
 					V_RES  : integer := 96    -- Vertical Resolution
 				) ;
-		port (
+		port (   
+			     seed   : in std_logic_vector (4 downto 0) ;
 				 rand   : out integer range 0 to (V_RES/2 - 1) ;
 				 clock  : in  std_logic
 			 ) ;

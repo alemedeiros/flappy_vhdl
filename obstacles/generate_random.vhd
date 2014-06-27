@@ -15,7 +15,8 @@ entity generate_random is
     generic (
 				V_RES  : integer := 96    -- Vertical Resolution
 			) ;
-	port (
+	port (   
+			 seed   : in std_logic_vector (4 downto 0) ;
 			 rand   : out integer range 0 to (V_RES/2 - 1) ;
 			 clock  : in  std_logic
 		 ) ;
@@ -27,7 +28,7 @@ begin
      variable lfsr : std_logic_vector (4 downto 0) := "10011" ;
       begin
 		if rising_edge(clock) then
-		 lfsr(0)                   := lfsr(4) xor lfsr(3);                      
+		 lfsr(0)                   := lfsr(4) xor (lfsr(3) and lfsr(2));                      
 		 lfsr(4 downto 1)          := lfsr(3 downto 0); 
 		end if ;
 	 rand <= to_integer(unsigned(lfsr)) + 16 ;	

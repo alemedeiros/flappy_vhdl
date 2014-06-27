@@ -32,6 +32,7 @@ end update_obstacles ;
 
 architecture behavior of update_obstacles is
   signal pos      : integer range 0 to H_RES / N_OBST - 1 ;
+  signal low_aux  : integer range 0 to V_RES - 1 ;
 begin
 
  process (new_obst)
@@ -47,13 +48,10 @@ begin
 	 generic map (V_RES => V_RES)
      port map (seed => "10011",
 			  clock => new_obst,
-			  rand  => low_obst) ;
+			  rand  => low_aux) ;
 			  
- qhigh1: generate_random
-	 generic map (V_RES => V_RES)
-     port map (seed => "01010",
-			  clock => new_obst,
-			  rand  => high_obst) ;
+  high_obst <= V_RES - low_aux - 20 ;
 
+  low_obst <= low_aux ;
   obst_rem <= new_obst ;
 end behavior; 

@@ -82,6 +82,9 @@ architecture behavior of flappy_vhdl is
 
 	signal aux_speed    : integer range - V_RES to V_RES - 1 ;
 	signal aux_position : integer range 0 to V_RES - 1 ;
+	
+	signal obst_count : integer range 0 to 255 ;
+	
 begin
 	gc: game_control
 	port map (
@@ -159,33 +162,20 @@ begin
 			 ) ;
 
 	-- DEBUG: Gradually changes size of obstacles
-	process(timer)
-		variable tmp_low  : integer range 0 to 95 ;
-		variable tmp_high : integer range 0 to 95 := 40;
-		variable dir      : std_logic := '0' ;
-	begin
-		if rising_edge(timer) then
-			if dir = '0' then
-				tmp_low  := tmp_low + 1 ;
-				tmp_high  := tmp_high - 1 ;
-			else
-				tmp_low  := tmp_low - 1 ;
-				tmp_high  := tmp_high + 1 ;
-			end if ;
-		end if ;
-
-		if tmp_high = 0 then
-			dir := '1' ;
-		elsif tmp_high = 40 then
-			dir := '0' ;
-		end if ;
-
-		n_low  <= tmp_low ;
-		n_high <= tmp_high ;
-	end process ;
-
+	iup_obs: update_obstacles
+	port map  (
+			 new_obst     => draw_en ,
+			 obst_count   => obst_count ,
+			 low_obst     => n_low ,
+			 high_obst    => n_high ,
+			 obst_rem     => open ,
+			 clock        => timer ,
+			 enable       => ctl_update_obstacles ,
+			 reset        => int_reset
+		 ) ;
+	
 	div2: clock_divider
-	generic map ( RATE => 27000000 )
+	generic map ( RATE => 15000000 )
 	port map (
 				 clk_in  => clock_27,
 				 clk_out => timer2,
