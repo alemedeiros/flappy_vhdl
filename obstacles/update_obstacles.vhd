@@ -45,12 +45,14 @@ begin
 
  qlow1: generate_random
 	 generic map (V_RES => V_RES)
-     port map (clock => new_obst,
+     port map (seed => "10011",
+			  clock => new_obst,
 			  rand  => low_obst) ;
 			  
  qhigh1: generate_random
 	 generic map (V_RES => V_RES)
-     port map (clock => new_obst,
+     port map (seed => "01010",
+			  clock => new_obst,
 			  rand  => high_obst) ;
 
   obst_rem <= new_obst ;
