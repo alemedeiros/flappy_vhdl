@@ -20,7 +20,7 @@ entity update_obstacles is
 			) ;
 	port (
 			 new_obst     : in  std_logic ;
-			 obst_count   : buffer integer range 0 to 255 ;
+			 obst_count   : buffer integer range -2 to 255 ;
 			 low_obst     : out integer range 0 to V_RES - 1 ;
 			 high_obst    : out integer range 0 to V_RES - 1 ;
 			 obst_rem     : out std_logic ;
@@ -38,7 +38,7 @@ begin
  process (new_obst)
  begin
    if reset = '1' then
-    obst_count <= 0 ;
+    obst_count <= -2 ;
    elsif enable = '1' and rising_edge(new_obst) then 
     obst_count <= obst_count + 1 ;
    end if; 

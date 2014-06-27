@@ -82,7 +82,7 @@ package output is
 	-- outputs.
 	component ledcon
 		port (
-				 obst_count : in  integer range 0 to 255 ;
+				 obst_count : in  integer range -2 to 255 ;
 				 pause      : in  std_logic ;
 				 game_over  : in  std_logic ;
 				 hex0       : out std_logic_vector(0 to 6) ;
@@ -90,10 +90,7 @@ package output is
 				 hex2       : out std_logic_vector(0 to 6) ;
 				 hex3       : out std_logic_vector(0 to 6) ;
 				 ledr       : out std_logic_vector(0 to 9) ;
-				 ledg       : out std_logic_vector(0 to 7) ;
-				 clock      : in  std_logic ;
-				 enable     : in  std_logic ;
-				 reset      : in  std_logic
+				 ledg       : out std_logic_vector(0 to 7)
 			 ) ;
 	end component ;
 

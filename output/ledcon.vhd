@@ -16,7 +16,7 @@ use module.output.hex2disp ;
 
 entity ledcon is
 	port (
-			 obst_count : in  integer range 0 to 255 ;
+			 obst_count : in  integer range -2 to 255 ;
 			 pause      : in  std_logic ;
 			 game_over  : in  std_logic ;
 			 hex0       : out std_logic_vector(0 to 6) ;
@@ -24,20 +24,20 @@ entity ledcon is
 			 hex2       : out std_logic_vector(0 to 6) ;
 			 hex3       : out std_logic_vector(0 to 6) ;
 			 ledr       : out std_logic_vector(0 to 9) ;
-			 ledg       : out std_logic_vector(0 to 7) ;
-			 clock      : in  std_logic ;
-			 enable     : in  std_logic ;
-			 reset      : in  std_logic
+			 ledg       : out std_logic_vector(0 to 7)
 		 ) ;
 end ledcon ;
 
 architecture behavior of ledcon is
-	signal val : std_logic_vector(7 downto 0) ;
+	signal val : std_logic_vector(15 downto 0) ;
 begin
-	val <= std_logic_vector(to_unsigned(obst_count,8)) ;
+	val <= std_logic_vector(to_unsigned(obst_count, 16)) ;
 
-	disp0: hex2disp port map (val(3 downto 0), hex0) ;
-	disp1: hex2disp port map (val(7 downto 4), hex1) ;
-	hex2 <= (others => '1') ;
+	ledr <= (others => '1') when game_over = '1' else (others => '0') ;
+	ledg <= (others => '1') when pause = '1' else (others => '0') ;
+
+	hex0 <= (others => '1') ;
+	disp0: hex2disp port map (val(3  downto  0), hex1) ;
+	disp1: hex2disp port map (val(7  downto  4), hex2) ;
 	hex3 <= (others => '1') ;
 end behavior ;

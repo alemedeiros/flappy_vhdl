@@ -119,6 +119,20 @@ begin
 ----			 gravity  => gravity
 ----		 ) ;
 
+	-- leds controller
+	lcon: ledcon
+	port map (
+				 obst_count => obst_count,
+				 pause      => pause,
+				 game_over  => game_over,
+				 hex0       => hex0,
+				 hex1       => hex1,
+				 hex2       => hex2,
+				 hex3       => hex3,
+				 ledr       => ledr,
+				 ledg       => ledg
+			 ) ;
+
 	colisi: colision_detection
 	port map (
 				 player     => play,
@@ -211,23 +225,6 @@ begin
 				 reset    =>  int_reset
 			 ) ;
 
-	-- leds controller
-	lcon: ledcon
-	port map (
-				 obst_count => obst_count,
-				 pause      => pause,
-				 game_over  => game_over,
-				 hex0       => hex0,
-				 hex1       => hex1,
-				 hex2       => hex2,
-				 hex3       => hex3,
-				 ledr       => open,
-				 ledg       => open,
-				 clock      => clock_27,
-				 enable     => '1',
-				 reset      => reset
-			 ) ;
-
 	-- DEBUG
 	--game_over <= sw(9) ;
 	reset     <= not key(1) ;
@@ -236,7 +233,7 @@ begin
 	obst_rem  <= sw(6) ;
 	new_obst  <= sw(5) ;
 
-	ledg(5) <= game_over ;
-	ledg(3 downto 0) <= key ;
-	ledr <= sw ;
+	--ledg(5) <= game_over ;
+	--ledg(3 downto 0) <= key ;
+	--ledr <= sw ;
 end behavior ;

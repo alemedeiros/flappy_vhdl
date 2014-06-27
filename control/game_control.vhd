@@ -43,6 +43,7 @@ begin
 		variable count : integer ;
 	begin
 		if reset = '1' then
+			internal_reset <= '1' ;
 			state <= start ;
 		elsif rising_edge(clock) then
 			case state is
@@ -90,7 +91,7 @@ begin
 
 					calculate_speed    <= '0' ;
 					calculate_position <= '0' ;
-					obst_regbank       <= '1' ;
+					obst_regbank       <= '0' ;
 					update_obstacles   <= '0' ;
 					new_obst           <= '0' ;
 					colision_detection <= '1' ;

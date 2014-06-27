@@ -49,7 +49,7 @@ package obstacles is
 				) ;
 		port (
 				 new_obst     : in  std_logic ;
-				 obst_count   : buffer integer range 0 to 255 ;
+				 obst_count   : buffer integer range -2 to 255 ;
 				 low_obst     : out integer range 0 to V_RES - 1 ;
 				 high_obst    : out integer range 0 to V_RES - 1 ;
 				 obst_rem     : out std_logic ;
