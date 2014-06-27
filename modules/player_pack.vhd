@@ -12,10 +12,13 @@ package player is
 	-- Calculate current speed based on internal register for speed, gravity value
 	-- and jump signal.
 	component calculate_speed
+	    generic (
+			 V_RES  : natural     -- Vertical Resolution
+			) ;
 		port (
 				 jump    : in  std_logic ;
-				 gravity : in  std_logic_vector(7 downto 0) ;
-				 speed   : out std_logic_vector(7 downto 0) ;
+				 gravity : in  std_logic_vector(3 downto 0) ;
+				 speed   : out integer range - V_RES to V_RES - 1 ;
 				 clock   : in  std_logic ;
 				 enable  : in  std_logic ;
 				 reset   : in  std_logic
@@ -25,9 +28,12 @@ package player is
 	-- Calculate current position based on internal register for position and
 	-- current speed value.
 	component calculate_position
+    	generic (
+			 V_RES  : natural     -- Vertical Resolution
+			) ;	
 		port (
-				 speed    : in  std_logic_vector(7 downto 0) ;
-				 position : out std_logic_vector(7 downto 0) ;
+				 speed    : in  integer range - V_RES to V_RES - 1 ;
+				 position : out integer range 0 to V_RES - 1 ;
 				 clock    : in  std_logic ;
 				 enable   : in  std_logic ;
 				 reset    : in  std_logic

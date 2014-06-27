@@ -10,6 +10,8 @@
 
 library ieee ;
 use ieee.std_logic_1164.all ;
+use ieee.std_logic_unsigned.all ;
+use ieee.numeric_std.all;
 
 library modules ;
 use modules.colision.all ;
@@ -20,6 +22,9 @@ use modules.output.all ;
 use modules.player.all ;
 
 entity flappy_vhdl is
+    generic (
+			V_RES  : natural := 96    -- Vertical Resolution
+			) ;
 	port (
 			 -- Input keys
 			 key      : in  std_logic_vector(3 downto 0) ;
@@ -44,6 +49,7 @@ end flappy_vhdl ;
 
 architecture behavior of flappy_vhdl is
 	signal timer : std_logic ;
+	signal timer2 : std_logic ;
 	signal draw_en : std_logic ;
 
 	signal pos  : integer range 31 downto 0;
@@ -72,6 +78,9 @@ architecture behavior of flappy_vhdl is
 	signal ctl_colision_detection : std_logic ;
 	signal ctl_draw_frame         : std_logic ;
 	signal ctl_ledcon             : std_logic ;
+	
+	signal aux_speed    : integer range - V_RES to V_RES - 1 ;
+	signal aux_position : integer range 0 to V_RES - 1 ;
 begin
 	gc: game_control
 	port map (
@@ -138,30 +147,6 @@ begin
 				 reset   => int_reset
 			 ) ;
 
-	-- DEBUG: Change player value
-	process(timer, int_reset)
-		variable tmp : integer range 0 to 95 := 47 ;
-		variable dir : std_logic := '0' ;
-	begin
-		if int_reset = '1' then
-			tmp := 47 ;
-		elsif rising_edge(timer) and ctl_calculate_position = '1' then
-			if dir = '0' then
-				tmp := tmp + 1 ;
-			else
-				tmp := tmp - 1 ;
-			end if ;
-		end if ;
-
-		if tmp = 30 then
-			dir := '0' ;
-		elsif tmp = 65 then
-			dir := '1' ;
-		end if ;
-
-		play <= tmp ;
-	end process ;
-
 	-- DEBUG: Gradually changes size of obstacles
 	process(timer)
 		variable tmp_low  : integer range 0 to 95 ;
@@ -187,6 +172,38 @@ begin
 		n_low  <= tmp_low ;
 		n_high <= tmp_high ;
 	end process ;
+	
+	div2: clock_divider
+	generic map ( RATE => 2114783640 )
+	port map (
+				 clk_in  => clock_27,
+				 clk_out => timer2,
+				 enable  => '1',
+				 reset   => int_reset
+			 ) ;
+	
+	-- calculate speed	
+	cs: calculate_speed
+	generic map ( V_RES => V_RES )
+	port map (
+		     jump     =>  jump ,
+			 gravity  =>  "0001" ,
+			 speed    =>  aux_speed ,
+			 clock    =>  timer2 ,
+			 enable   =>  ctl_calculate_speed ,
+			 reset    =>  reset
+		 ) ;
+   
+    -- calculate position	
+	cp: calculate_position
+    generic map ( V_RES => V_RES )
+	port map (
+			 speed    =>  aux_speed ,
+			 position =>  play ,
+			 clock    =>  timer2 ,
+			 enable   =>  ctl_calculate_position ,
+			 reset    =>  reset 
+		 ) ;
 
 	-- DEBUG
 	game_over <= sw(9) ;
