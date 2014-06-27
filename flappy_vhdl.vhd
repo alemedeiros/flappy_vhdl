@@ -96,8 +96,8 @@ begin
 				 pause      => pause,
 				 jump       => jump,
 				 clock      => clock_27,
-				 obst_rem   => obst_rem,
-				 new_obst   => new_obst,
+				 obst_rem   => '0',
+				 new_obst   => open,
 				 timer      => timer,
 
 				 calculate_speed    => ctl_calculate_speed,
@@ -233,12 +233,9 @@ begin
 	disp1: hex2disp port map (count_aux(7  downto  4), hex2) ;
 	hex3 <= (others => '1') ;
 
-	--game_over <= sw(9) ;
 	reset     <= not key(1) ;
-	pause     <= sw(7) ;
+	pause     <= sw(9) ;
 	jump      <= not key(2) ;
-	obst_rem  <= sw(6) ;
-	new_obst  <= sw(5) ;
 
 	ledr(0) <= game_over ;
 	ledg(0) <= pause ;
